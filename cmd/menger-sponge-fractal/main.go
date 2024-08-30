@@ -1,6 +1,9 @@
 package main
 
 import (
+	"math"
+	"menger-sponge-fractal/internals/models"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -10,7 +13,8 @@ const (
 )
 
 var (
-	backgroundColor = rl.NewColor(51, 51, 51, 255)
+	// backgroundColor = rl.NewColor(51, 51, 51, 255)
+	backgroundColor = rl.Green
 )
 
 func main() {
@@ -24,13 +28,31 @@ func main() {
 		Fovy:       45,
 		Projection: rl.CameraPerspective,
 	}
+	sponge := []models.Box{}
+	box := models.NewBox(0, 0, 0, 2)
+	sponge = append(sponge, box)
+	var rotationAngle float32
 	for !rl.WindowShouldClose() {
+		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+			var newSponge []models.Box
+			for _, b := range sponge {
+				newSponge = append(newSponge, b.Generate()...)
+			}
+			sponge = newSponge
+		}
+		rotationAngle += rl.GetFrameTime() * 90
+		camera.Position = rl.NewVector3(
+			5*float32(math.Cos(float64(rotationAngle)*rl.Deg2rad)),
+			5*float32(math.Sin(float64(rotationAngle)*rl.Deg2rad)),
+			camera.Position.Z,
+		)
 		rl.UpdateCamera(&camera, rl.CameraOrbital)
 		rl.BeginDrawing()
 		rl.ClearBackground(backgroundColor)
 		rl.BeginMode3D(camera)
-		rl.DrawCube(rl.NewVector3(0, 0, 0), 2, 2, 2, backgroundColor)
-		rl.DrawCubeWires(rl.NewVector3(0, 0, 0), 2, 2, 2, rl.RayWhite)
+		for _, b := range sponge {
+			b.Draw()
+		}
 		rl.EndMode3D()
 		rl.EndDrawing()
 	}
