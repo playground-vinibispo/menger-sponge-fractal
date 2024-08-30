@@ -44,9 +44,9 @@ func main() {
 		camera.Position = rl.NewVector3(
 			5*float32(math.Cos(float64(rotationAngle)*rl.Deg2rad)),
 			5*float32(math.Sin(float64(rotationAngle)*rl.Deg2rad)),
-			camera.Position.Z,
+			5*float32(math.Sin(float64(rotationAngle)*rl.Deg2rad)),
 		)
-		rl.UpdateCamera(&camera, rl.CameraOrbital)
+		// rl.UpdateCamera(&camera, rl.CameraOrbital)
 		rl.BeginDrawing()
 		rl.ClearBackground(backgroundColor)
 		rl.BeginMode3D(camera)
@@ -58,4 +58,3 @@ func main() {
 	}
 	rl.CloseWindow()
 }
-
